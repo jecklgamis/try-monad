@@ -8,6 +8,15 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>try-monad</name>
+    <description>A Java Try Monad</description>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <dependencies>
         <dependency>
