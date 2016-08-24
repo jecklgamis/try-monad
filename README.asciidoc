@@ -1,0 +1,48 @@
+# try-monad
+
+About
+-----
+
+Inspired by `scala.util.Try`, this is small library that provides an abstraction of a resulf of a function application.
+
+Getting Started
+---------------
+
+Add to your Maven `pom.xml`
+-----
+<groupId>io.jecklgamis</groupId>
+<artifactId>try-monad</artifactId>
+<version>1.0-SNAPSHOT</version>
+-----
+
+A Primer On Using Try 
+---------------------
+Below is an example util function to check socket connection to a specified host.
+
+----
+import java.io.IOException;
+import java.net.Socket;
+
+import static io.jecklgamis.util.TryFactory.attempt;
+
+public class ExampleUsage {
+
+    public static boolean canConnect(String host, int port) {
+        return attempt(() -> new Socket(host, port)).map((s) -> s.isConnected()).getOrElse(false);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(canConnect("localhost", 80));
+    }
+}
+----
+The `canConnect` function uses `TryFactory.attempt` (similar to `try`) to invoke a function that returns a socket instance (`() -> new Socket`).
+It will then return an instance of `Try` , specifically a `Success` if there is no exception thrown, or `Failure` otherwise.
+
+If the call is successful, the function passed to map (i.e. `(s) -> s.isConnected()`) will be invoked. The `s` parameter
+in the expression  is the result of function in `attempt` (a socket instance). If `attempt` fails (`attempt` returned a
+ `Failure`),  `map`  will not be invoked and simply returns the `Failure` returned by `attempt`. 
+
+The last call in the chain is `getOrElse(false)`, which will return a boolean depending on the output of `map`. If the `map` returns
+a `Success` (no exception thrown in `(s)-> s.isConnected),  `getOrElse` will simply return the value of the function passed to `map`. 
+Otherwise, `getOrElse` will return the given value, which in this case `false`.
