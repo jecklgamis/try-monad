@@ -1,4 +1,4 @@
-# try-monad
+# try-monad image:https://travis-ci.org/jecklgamis/try-monad.svg?branch=master["Build Status", link="https://travis-ci.org/jecklgamis/try-monad"]
 
 About
 -----
