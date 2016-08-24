@@ -5,17 +5,17 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static io.jecklgamis.util.TryFactory.Try;
+import static io.jecklgamis.util.TryFactory.attempt;
 
 /**
  * A Try instance that indicates a successful execution.
  *
  * @param <T> the return type of the expression result.
  */
-class Success<T> extends Try<T> {
+class Success<T> implements Try<T> {
     private T v;
 
-    public Success(T v) {
+    protected Success(T v) {
         this.v = v;
     }
 
@@ -35,8 +35,8 @@ class Success<T> extends Try<T> {
     }
 
     @Override
-    public <U> Try<U> map(TryFunction<T, U> fn) {
-        return Try(() -> fn.apply(get()));
+    public <U> Try<U> map(TryFunction<? super T, U> fn) {
+        return attempt(() -> fn.apply(get()));
     }
 
     @Override
@@ -56,6 +56,16 @@ class Success<T> extends Try<T> {
     @Override
     public Try<T> filter(Predicate<? super T> p) {
         return (p.test(get())) ? this : new Failure(new NoSuchElementException());
+    }
+
+    @Override
+    public T getOrElse(Supplier<T> fn) {
+        return get();
+    }
+
+    @Override
+    public T getOrElse(T value) {
+        return get();
     }
 
     @Override

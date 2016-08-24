@@ -5,7 +5,14 @@ package io.jecklgamis.util;
  */
 public final class TryFactory {
 
-    public static <T> Try<T> Try(TrySupplier<T> fn) {
+    /**
+     * Apply the given function and return the result abstracted in a Try.
+     *
+     * @param fn  the function to apply
+     * @param <T> the return type of the function
+     * @return `Success` or `Failure`
+     */
+    public static <T> Try<T> attempt(TrySupplier<T> fn) {
         try {
             return new Success(fn.get());
         } catch (Throwable e) {

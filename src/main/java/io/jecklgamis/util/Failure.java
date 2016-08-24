@@ -9,11 +9,11 @@ import java.util.function.Supplier;
  *
  * @param <T> the return type of the expression result.
  */
-class Failure<T> extends Try<T> {
+class Failure<T> implements Try<T> {
     private Throwable t;
 
 
-    public Failure(Throwable t) {
+    protected Failure(Throwable t) {
         this.t = t;
     }
 
@@ -33,7 +33,7 @@ class Failure<T> extends Try<T> {
     }
 
     @Override
-    public <U> Try<U> map(TryFunction<T, U> fn) {
+    public <U> Try<U> map(TryFunction<? super T, U> fn) {
         return (Try<U>) this;
     }
 
@@ -50,6 +50,16 @@ class Failure<T> extends Try<T> {
     @Override
     public Try<T> filter(Predicate<? super T> p) {
         return this;
+    }
+
+    @Override
+    public T getOrElse(Supplier<T> fn) {
+        return fn.get();
+    }
+
+    @Override
+    public T getOrElse(T value) {
+        return value;
     }
 
     @Override

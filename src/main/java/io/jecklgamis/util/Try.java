@@ -5,11 +5,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * An abstraction of a result that could possibly fail because of an exception.
+ * An abstraction of a result that could possibly fail because of an exception. Use @see TryFactory.attempt() to create a Try.
  *
  * @param <T> the type of the result
  */
-public abstract class Try<T> {
+public interface Try<T> {
 
     /**
      * Returns the resulting value of the given expression if this is a Success, otherwise throws a RuntimeException wrapping
@@ -17,21 +17,21 @@ public abstract class Try<T> {
      *
      * @return the value or exception being thrown
      */
-    public abstract T get();
+    T get();
 
     /**
      * Returns true if this is Success, false if this is a Failure.
      *
      * @return true or false
      */
-    public abstract boolean isSuccess();
+    boolean isSuccess();
 
     /**
      * Returns true if this is Failure, false if this is a Success.
      *
      * @return true or otherwise
      */
-    public abstract boolean isFailure();
+    boolean isFailure();
 
     /**
      * Applies the given function to the result wrapped in a Try if this is a Success, otherwise return this Failure.
@@ -40,7 +40,7 @@ public abstract class Try<T> {
      * @param <U> mapped return value type
      * @return mapped value
      */
-    public abstract <U> Try<U> map(TryFunction<T, U> fn);
+    <U> Try<U> map(TryFunction<? super T, U> fn);
 
     /**
      * Applies the given function to the result if this is a Success. If that function fails a Failure is returned.
@@ -50,7 +50,7 @@ public abstract class Try<T> {
      * @param <U> the return type of the resulting Try
      * @return Try
      */
-    public abstract <U> Try<U> flatMap(TryFunction<? super T, Try<U>> fn);
+    <U> Try<U> flatMap(TryFunction<? super T, Try<U>> fn);
 
     /**
      * Returns this Success if the predicate is satisfied. Else return this Failure.
@@ -58,15 +58,15 @@ public abstract class Try<T> {
      * @param p predicate
      * @return a Try
      */
-    public abstract Try<T> filter(Predicate<? super T> p);
+    Try<T> filter(Predicate<? super T> p);
 
     /**
-     * Applies the the given method (side-effect) on the result if this is a Success. Else do nothing.
+     * Applies the the given method (side-effect) on the result if this is a Success. Otherwise, do nothing.
      *
      * @param fn  the function to apply
      * @param <U> the return type of the applied function
      */
-    public <U> void forEach(TryFunction<T, U> fn) {
+    default <U> void forEach(TryFunction<T, U> fn) {
         if (isSuccess()) {
             try {
                 fn.apply(get());
@@ -82,9 +82,7 @@ public abstract class Try<T> {
      * @param fn the function to apply
      * @return function application result or result of Success
      */
-    public T getOrElse(Supplier<T> fn) {
-        return isSuccess() ? get() : fn.get();
-    }
+    T getOrElse(Supplier<T> fn);
 
     /**
      * Returns the given value if this is a Failure otherwise return this Success.
@@ -92,9 +90,7 @@ public abstract class Try<T> {
      * @param value the value
      * @return value  or the result of this Success
      */
-    public T getOrElseThis(T value) {
-        return getOrElse(() -> value);
-    }
+    T getOrElse(T value);
 
     /**
      * Returns this if it is a Success, otherwise apply the given function. If an exception occurs when applying the function, a Failure
@@ -103,14 +99,24 @@ public abstract class Try<T> {
      * @param fn the function to apply
      * @return Try
      */
-    public abstract Try<T> orElse(Supplier<Try<T>> fn);
+    Try<T> orElse(Supplier<Try<T>> fn);
+
+    /**
+     * Throws the given Throwable if this is a Failure.
+     *
+     * @param t the Throwable
+     * @throws Throwable the Throwable
+     */
+    default void orElseThrow(Throwable t) throws Throwable {
+        if (isFailure()) throw t;
+    }
 
     /**
      * Converts this to a non-empty Optional if this is Success, otherwise return Optional.empty
      *
      * @return the Optional
      */
-    public abstract Optional<T> toOptional();
+    Optional<T> toOptional();
 
     /**
      * Applies this function if this is a Failure, otherwise return this Failure
@@ -118,7 +124,7 @@ public abstract class Try<T> {
      * @param fn the function that recovers from the throwable
      * @return the Try
      */
-    public abstract Try<T> recover(TryFunction<? super Throwable, T> fn);
+    Try<T> recover(TryFunction<? super Throwable, T> fn);
 
     /**
      * Applies this function if this is a Failure, otherwise return this Failure
@@ -126,7 +132,7 @@ public abstract class Try<T> {
      * @param fn the function that recovers from the throwable
      * @return the Try
      */
-    public abstract Try<T> recoverWith(TryFunction<? super Throwable, Try<T>> fn);
+    Try<T> recoverWith(TryFunction<? super Throwable, Try<T>> fn);
 
 }
 
