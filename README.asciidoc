@@ -5,6 +5,10 @@ About
 
 Inspired by `scala.util.Try`, this is small library that provides an abstraction of a resulf of a function application.
 
+API Docs
+--------
+https://jecklgamis.github.io/try-monad/apidocs/
+
 Getting Started
 ---------------
 
