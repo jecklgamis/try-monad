@@ -1,4 +1,4 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
 /**
  * A Function that accepts T and returns R and could throw a Throwable.

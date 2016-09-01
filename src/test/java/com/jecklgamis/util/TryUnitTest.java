@@ -1,61 +1,63 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.Socket;
 
-import static io.jecklgamis.util.TryFactory.attempt;
 import static java.lang.Integer.toBinaryString;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static com.jecklgamis.util.TryFactory.attempt;
 
 public class TryUnitTest {
 
     @Test
     public void isSuccessOnSuccessShouldBeTrue() {
-        assertTrue(attempt(() -> 1).isSuccess());
-        assertFalse(attempt(() -> 1).isFailure());
+        assertTrue(TryFactory.attempt(() -> 1).isSuccess());
+        assertFalse(TryFactory.attempt(() -> 1).isFailure());
     }
 
     @Test
     public void isFailureOnFailureShouldBeTrue() {
-        assertTrue(attempt(() -> {
+        assertTrue(TryFactory.attempt(() -> {
             throw new Exception();
         }).isFailure());
-        assertFalse(attempt(() -> {
+        assertFalse(TryFactory.attempt(() -> {
             throw new Exception();
         }).isSuccess());
     }
 
     @Test
     public void getOnSuccessShouldReturnTheExpressionResult() {
-        assertEquals(2, attempt(() -> 2).get(), 0);
+        assertEquals(2, TryFactory.attempt(() -> 2).get(), 0);
     }
 
     @Test(expected = RuntimeException.class)
     public void getOnFailureShouldThrowException() {
-        attempt(() -> {
+        TryFactory.attempt(() -> {
             throw new Exception();
         }).get();
     }
 
     @Test
     public void getOrElseOnFailureShouldReturnGivenValue() {
-        assertEquals(new Integer(3), attempt(() -> {
+        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
             throw new Exception();
         }).getOrElse(3));
     }
 
     @Test
     public void getOrElseThisOnSuccessShouldReturnTheExpressionResult() {
-        assertEquals(1, attempt(() -> 1).getOrElse(0).intValue());
+        assertEquals(1, TryFactory.attempt(() -> 1).getOrElse(0).intValue());
     }
 
     @Test
     public void forEachOnSuccessShouldApplyTheGivenFunction() {
-        Try<Integer> result = attempt(() -> 1);
+        Try<Integer> result = TryFactory.attempt(() -> 1);
         final int[] sideEffect = new int[1];
         sideEffect[0] = 0;
         result.forEach((r) -> sideEffect[0] = r);
@@ -64,14 +66,14 @@ public class TryUnitTest {
 
     @Test(expected = RuntimeException.class)
     public void forEachOnSuccessWithFailingSideEffect() {
-        attempt(() -> 1).forEach(((v) -> {
+        TryFactory.attempt(() -> 1).forEach(((v) -> {
             throw new IOException();
         }));
     }
 
     @Test
     public void forEachOnFailureShouldNotApplyTheGivenFunction() {
-        Try<Integer> result = attempt(() -> {
+        Try<Integer> result = TryFactory.attempt(() -> {
             throw new Exception();
         });
         final int[] sideEffect = new int[1];
@@ -82,33 +84,33 @@ public class TryUnitTest {
 
     @Test
     public void getOrElseOnOnSuccessShouldReturnExpressionResult() {
-        assertEquals(1, attempt(() -> 1).getOrElse(() -> 0).intValue());
+        assertEquals(1, TryFactory.attempt(() -> 1).getOrElse(() -> 0).intValue());
     }
 
     @Test
     public void getOrElseOnFailureShouldReturnExpressionResult() {
-        assertEquals(new Integer(3), attempt(() -> {
+        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
             throw new Exception();
         }).getOrElse(() -> 3));
     }
 
     @Test
     public void OrElseOnOnSuccessShouldReturnExpressionResult() {
-        assertEquals(2, attempt(() -> 2).orElse(() -> attempt(() -> 3)).get().intValue());
+        assertEquals(2, TryFactory.attempt(() -> 2).orElse(() -> TryFactory.attempt(() -> 3)).get().intValue());
     }
 
     @Test
     public void OrElseOnOnFailureShouldReturnExpressionResultOfTheGivenTry() {
-        assertEquals(new Integer(3), attempt(() -> {
+        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
             throw new Exception();
-        }).orElse(() -> attempt(() -> 3)).get());
+        }).orElse(() -> TryFactory.attempt(() -> 3)).get());
     }
 
     @Test
     public void OrElseOnOnFailureShouldReturnNewFailureIfTheGivenTryFails() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new Exception();
-        }).orElse(() -> attempt(() -> {
+        }).orElse(() -> TryFactory.attempt(() -> {
             throw new NullPointerException();
         }));
         assertTrue(result.isFailure());
@@ -116,26 +118,26 @@ public class TryUnitTest {
 
     @Test
     public void mapOnSuccessShouldReturnSuccess() {
-        Try<Integer> result = attempt(() -> 2).map((r) -> 2 * r.intValue());
+        Try<Integer> result = TryFactory.attempt(() -> 2).map((r) -> 2 * r.intValue());
         assertTrue(result.isSuccess());
         assertEquals(4, result.get().intValue());
     }
 
     @Test
     public void mapOnSuccessShouldReturnSuccessForSubTypes() {
-        assertEquals("10", attempt(() -> 2).map((r) -> toBinaryString(r)).get());
-        assertEquals(true, attempt(() -> 2).map((r) -> r % 2 == 0).get().booleanValue());
+        Assert.assertEquals("10", TryFactory.attempt(() -> 2).map((r) -> toBinaryString(r)).get());
+        Assert.assertEquals(true, TryFactory.attempt(() -> 2).map((r) -> r % 2 == 0).get().booleanValue());
     }
 
     @Test
     public void mapOnSuccessShouldReturnAFailureIfTheMappingFunctionFails() {
-        Try<Integer> result = attempt(() -> 2).map((v) -> v / 0);
+        Try<Integer> result = TryFactory.attempt(() -> 2).map((v) -> v / 0);
         assertTrue(result.isFailure());
     }
 
     @Test
     public void mapOnFailureShouldJustReturnTheFailure() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new Exception();
         }).map((v) -> "ignored");
         assertTrue(result.isFailure());
@@ -143,14 +145,14 @@ public class TryUnitTest {
 
     @Test
     public void flatMapOnSuccessShouldApplyTheGivenFunctionThatSucceeds() {
-        Try result = attempt(() -> 2).flatMap((v) -> attempt(() -> toBinaryString(v)));
+        Try result = TryFactory.attempt(() -> 2).flatMap((v) -> TryFactory.attempt(() -> toBinaryString(v)));
         assertTrue(result.isSuccess());
         assertEquals("10", result.get());
     }
 
     @Test
     public void flatMapOnSuccessShouldReturnFailureIfTheMappingFunctionFails() {
-        Try result = attempt(() -> 1).flatMap((v) -> {
+        Try result = TryFactory.attempt(() -> 1).flatMap((v) -> {
             throw new Exception();
         });
         assertTrue(result.isFailure());
@@ -158,7 +160,7 @@ public class TryUnitTest {
 
     @Test
     public void flatMapOnSuccessShouldShouldReturnFailureIfApplyingTheMappingFunctionFails() {
-        Try result = attempt(() -> 1).flatMap((v) -> attempt(() -> {
+        Try result = TryFactory.attempt(() -> 1).flatMap((v) -> TryFactory.attempt(() -> {
             throw new Throwable();
         }));
         assertTrue(result.isFailure());
@@ -166,9 +168,9 @@ public class TryUnitTest {
 
     @Test
     public void flatMapOnFailureShouldJustReturnTheFailure() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new IOException();
-        }).flatMap((v -> attempt(() -> toBinaryString((Integer) v))));
+        }).flatMap((v -> TryFactory.attempt(() -> toBinaryString((Integer) v))));
         try {
             result.get();
             fail("should throw exception");
@@ -179,43 +181,43 @@ public class TryUnitTest {
 
     @Test
     public void toOptionalOnSuccessShouldHaveNonEmptyValue() {
-        assertEquals(2, attempt(() -> 2).toOptional().get().intValue());
+        assertEquals(2, TryFactory.attempt(() -> 2).toOptional().get().intValue());
     }
 
     @Test
     public void toOptionalOnFailureShouldReturnEmpty() {
-        assertFalse(attempt(() -> {
+        assertFalse(TryFactory.attempt(() -> {
             throw new Exception();
         }).toOptional().isPresent());
     }
 
     @Test
     public void filterOnSuccessShouldReturnSuccessIfPredicateIsSatisfied() {
-        assertTrue(attempt(() -> 2).filter((v) -> v == 2).isSuccess());
+        assertTrue(TryFactory.attempt(() -> 2).filter((v) -> v == 2).isSuccess());
     }
 
     @Test
     public void filterOnSuccessShouldReturnFailureIfPredicateIsNotSatisfied() {
-        assertTrue(attempt(() -> 2).filter((v) -> v == 0).isFailure());
+        assertTrue(TryFactory.attempt(() -> 2).filter((v) -> v == 0).isFailure());
     }
 
     @Test
     public void filterOnFailureShouldJustReturnTheFailure() {
-        assertTrue(attempt(() -> {
+        assertTrue(TryFactory.attempt(() -> {
             throw new RuntimeException();
         }).filter((v) -> false).isFailure());
     }
 
     @Test
     public void recoverOnSuccessShouldShouldJustReturnSuccess() {
-        Try<Integer> result = attempt(() -> 2).recover((t) -> 0);
+        Try<Integer> result = TryFactory.attempt(() -> 2).recover((t) -> 0);
         assertTrue(result.isSuccess());
         assertEquals(2, result.get().intValue());
     }
 
     @Test
     public void recoverOnFailureShouldReturnSuccessIfRecoverySucceeds() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new Exception();
         }).recover((t) -> 0);
         assertTrue(result.isSuccess());
@@ -224,7 +226,7 @@ public class TryUnitTest {
 
     @Test
     public void recoverOnFailureShouldReturnFailureIfRecoveryFails() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new Exception();
         }).recover((t) -> {
             throw new Exception();
@@ -234,23 +236,23 @@ public class TryUnitTest {
 
     @Test
     public void recoverWithOnSuccessShouldJustReturnSuccess() {
-        Try<Integer> result = attempt(() -> 2).recoverWith((t) -> attempt(() -> 0));
+        Try<Integer> result = TryFactory.attempt(() -> 2).recoverWith((t) -> TryFactory.attempt(() -> 0));
         assertTrue(result.isSuccess());
         assertEquals(2, result.get().intValue());
     }
 
     @Test
     public void recoverWithOnFailureShouldReturnSuccessIfRecoverySucceeds() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new Exception();
-        }).recoverWith((t) -> attempt(() -> 0));
+        }).recoverWith((t) -> TryFactory.attempt(() -> 0));
         assertTrue(result.isSuccess());
         assertEquals(new Integer(0), result.get());
     }
 
     @Test(expected = RuntimeException.class)
     public void recoverWithOnFailureShouldReturnFailureIfRecoveryFails() {
-        Try result = attempt(() -> {
+        Try result = TryFactory.attempt(() -> {
             throw new IOException();
         }).recover((t) -> {
             if (t instanceof ClassCastException) {
@@ -269,11 +271,10 @@ public class TryUnitTest {
 
     @Test(expected = SomeException.class)
     public void OrElseOnOnFailureShouldThrowException() throws Throwable {
-        attempt(() -> {
+        TryFactory.attempt(() -> {
             throw new RuntimeException();
         }).orElseThrow(new SomeException());
     }
-
 }
 
 

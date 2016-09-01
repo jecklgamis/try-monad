@@ -1,87 +1,86 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static com.jecklgamis.util.TryFactory.attempt;
+
 /**
- * A Try instance that indicates a failed execution.
+ * A Try instance that indicates a successful execution.
  *
  * @param <T> the return type of the expression result.
  */
-class Failure<T> implements Try<T> {
-    private Throwable t;
+class Success<T> implements Try<T> {
+    private T v;
 
-
-    protected Failure(Throwable t) {
-        this.t = t;
+    protected Success(T v) {
+        this.v = v;
     }
 
     @Override
     public T get() {
-        throw new RuntimeException(t);
+        return v;
     }
 
     @Override
     public boolean isSuccess() {
-        return false;
-    }
-
-    @Override
-    public boolean isFailure() {
         return true;
     }
 
     @Override
+    public boolean isFailure() {
+        return false;
+    }
+
+    @Override
     public <U> Try<U> map(TryFunction<? super T, U> fn) {
-        return (Try<U>) this;
+        return attempt(() -> fn.apply(get()));
     }
 
     @Override
     public <U> Try<U> flatMap(TryFunction<? super T, Try<U>> fn) {
-        return (Try<U>) this;
-    }
-
-    @Override
-    public Optional<T> toOptional() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Try<T> filter(Predicate<? super T> p) {
-        return this;
-    }
-
-    @Override
-    public T getOrElse(Supplier<T> fn) {
-        return fn.get();
-    }
-
-    @Override
-    public T getOrElse(T value) {
-        return value;
-    }
-
-    @Override
-    public Try<T> orElse(Supplier<Try<T>> fn) {
-        return fn.get();
-    }
-
-    @Override
-    public Try<T> recover(TryFunction<? super Throwable, T> fn) {
         try {
-            return new Success(fn.apply(t));
-        } catch (Throwable e) {
-            return new Failure(e);
-        }
-    }
-
-    @Override
-    public Try<T> recoverWith(TryFunction<? super Throwable, Try<T>> fn) {
-        try {
-            return fn.apply(t);
+            return fn.apply(get());
         } catch (Throwable t) {
             return new Failure(t);
         }
     }
+
+    @Override
+    public Optional<T> toOptional() {
+        return Optional.of(get());
+    }
+
+    @Override
+    public Try<T> filter(Predicate<? super T> p) {
+        return (p.test(get())) ? this : new Failure(new NoSuchElementException());
+    }
+
+    @Override
+    public T getOrElse(Supplier<T> fn) {
+        return get();
+    }
+
+    @Override
+    public T getOrElse(T value) {
+        return get();
+    }
+
+    @Override
+    public Try<T> orElse(Supplier<Try<T>> fn) {
+        return this;
+    }
+
+    @Override
+    public Try<T> recover(TryFunction<? super Throwable, T> fn) {
+        return this;
+    }
+
+    @Override
+    public Try<T> recoverWith(TryFunction<? super Throwable, Try<T>> fn) {
+        return this;
+    }
+
 }

@@ -1,86 +1,87 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static io.jecklgamis.util.TryFactory.attempt;
-
 /**
- * A Try instance that indicates a successful execution.
+ * A Try instance that indicates a failed execution.
  *
  * @param <T> the return type of the expression result.
  */
-class Success<T> implements Try<T> {
-    private T v;
+class Failure<T> implements Try<T> {
+    private Throwable t;
 
-    protected Success(T v) {
-        this.v = v;
+
+    protected Failure(Throwable t) {
+        this.t = t;
     }
 
     @Override
     public T get() {
-        return v;
+        throw new RuntimeException(t);
     }
 
     @Override
     public boolean isSuccess() {
-        return true;
-    }
-
-    @Override
-    public boolean isFailure() {
         return false;
     }
 
     @Override
+    public boolean isFailure() {
+        return true;
+    }
+
+    @Override
     public <U> Try<U> map(TryFunction<? super T, U> fn) {
-        return attempt(() -> fn.apply(get()));
+        return (Try<U>) this;
     }
 
     @Override
     public <U> Try<U> flatMap(TryFunction<? super T, Try<U>> fn) {
-        try {
-            return fn.apply(get());
-        } catch (Throwable t) {
-            return new Failure(t);
-        }
+        return (Try<U>) this;
     }
 
     @Override
     public Optional<T> toOptional() {
-        return Optional.of(get());
+        return Optional.empty();
     }
 
     @Override
     public Try<T> filter(Predicate<? super T> p) {
-        return (p.test(get())) ? this : new Failure(new NoSuchElementException());
+        return this;
     }
 
     @Override
     public T getOrElse(Supplier<T> fn) {
-        return get();
+        return fn.get();
     }
 
     @Override
     public T getOrElse(T value) {
-        return get();
+        return value;
     }
 
     @Override
     public Try<T> orElse(Supplier<Try<T>> fn) {
-        return this;
+        return fn.get();
     }
 
     @Override
     public Try<T> recover(TryFunction<? super Throwable, T> fn) {
-        return this;
+        try {
+            return new Success(fn.apply(t));
+        } catch (Throwable e) {
+            return new Failure(e);
+        }
     }
 
     @Override
     public Try<T> recoverWith(TryFunction<? super Throwable, Try<T>> fn) {
-        return this;
+        try {
+            return fn.apply(t);
+        } catch (Throwable t) {
+            return new Failure(t);
+        }
     }
-
 }

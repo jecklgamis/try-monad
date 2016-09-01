@@ -1,4 +1,4 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
 /**
  * A supplier of T that and could throw a Throwable.

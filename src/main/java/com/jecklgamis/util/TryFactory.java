@@ -1,4 +1,4 @@
-package io.jecklgamis.util;
+package com.jecklgamis.util;
 
 /**
  * A factory class for creating Try instance.

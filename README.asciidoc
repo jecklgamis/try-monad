@@ -14,7 +14,7 @@ Getting Started
 
 Add to your Maven `pom.xml`
 -----
-<groupId>io.jecklgamis</groupId>
+<groupId>com.jecklgamis</groupId>
 <artifactId>try-monad</artifactId>
 <version>1.0-SNAPSHOT</version>
 -----
@@ -27,7 +27,7 @@ Below is an example util function to check socket connection to a specified host
 import java.io.IOException;
 import java.net.Socket;
 
-import static io.jecklgamis.util.TryFactory.attempt;
+import static com.jecklgamis.util.TryFactory.attempt;
 
 public class ExampleUsage {
 
