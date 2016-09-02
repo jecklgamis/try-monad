@@ -9,6 +9,7 @@
     <packaging>jar</packaging>
     <name>try-monad</name>
     <description>A Java Try Monad</description>
+    <url>http://github.com/jecklgamis/try-monad</url>
 
     <licenses>
         <license>
@@ -17,6 +18,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Jerrico Gamis</name>
+            <email>jecklgamis@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/jecklgamis/try-monad.git</connection>
+        <developerConnection>scm:git:ssh://github.com:jecklgamis/try-monad.git</developerConnection>
+        <url>http://github.com/jecklgamis/try-monad/tree/master</url>
+    </scm>
 
     <dependencies>
         <dependency>
