@@ -4,14 +4,12 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.Socket;
 
 import static java.lang.Integer.toBinaryString;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static com.jecklgamis.util.TryFactory.attempt;
 
 public class TryUnitTest {
 
