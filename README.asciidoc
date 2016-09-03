@@ -12,11 +12,35 @@ https://jecklgamis.github.io/try-monad/apidocs/
 Getting Started
 ---------------
 
-Add to your Maven `pom.xml`
+.Maven
 -----
-<groupId>com.jecklgamis</groupId>
-<artifactId>try-monad</artifactId>
-<version>1.0</version>
+<dependency>
+    <groupId>com.jecklgamis</groupId>
+    <artifactId>try-monad</artifactId>
+    <version>1.0</version>
+</dependency>
+-----
+
+.Gradle
+-----
+compile 'com.jecklgamis:try-monad:1.0'
+-----
+
+.Apache Buildr
+-----
+'com.jecklgamis:try-monad:jar:1.0'
+-----
+
+.Groovy Grapes
+-----
+@Grapes(
+@Grab(group='com.jecklgamis', module='try-monad', version='1.0')
+)
+-----
+
+.Leiningen
+-----
+[com.jecklgamis/try-monad "1.0"]
 -----
 
 A Primer On Using Try 
