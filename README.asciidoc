@@ -12,9 +12,6 @@ https://jecklgamis.github.io/try-monad/apidocs/
 Getting Started
 ---------------
 
-This is curretly in snapshot. Ensure your settings.xml
-
-
 Add to your Maven `pom.xml`
 -----
 <groupId>com.jecklgamis</groupId>
