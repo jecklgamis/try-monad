@@ -3,7 +3,7 @@
 About
 -----
 
-Inspired by `scala.util.Try`, this is small library that provides an abstraction of a resulf of a function application.
+Inspired by `scala.util.Try`, this is small library that provides an abstraction of result of a function application.
 
 API Docs
 --------
