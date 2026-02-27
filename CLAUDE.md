@@ -12,10 +12,15 @@ A Java library implementing the Try monad (inspired by `scala.util.Try`), provid
 mvn compile          # Compile
 mvn test             # Run all tests
 mvn package          # Build JAR
+mvn clean verify     # Clean build with all checks
 mvn test -Dtest=TryUnitTest#testMethodName  # Run a single test method
 ```
 
-Requires Java 8+. Uses Maven with `maven-compiler-plugin` targeting Java 1.8.
+Requires Java 8+. Uses Maven with `maven-compiler-plugin` targeting Java 1.8. Tests use JUnit 5 (Jupiter).
+
+## CI
+
+GitHub Actions workflow (`.github/workflows/build.yml`) runs on pushes to `main` and pull requests. Matrix build across Java LTS versions: 8, 11, 17, 21, 25.
 
 ## Architecture
 
@@ -28,3 +33,7 @@ All source is in `com.jecklgamis.util` package:
 - **`TrySupplier<T>`** — Functional interface like `Supplier<T>` but allows throwing `Throwable`
 
 Usage pattern: `TryFactory.attempt(() -> riskyOperation()).map(...).getOrElse(fallback)`
+
+## Versioning
+
+Uses semantic versioning (MAJOR.MINOR.PATCH). Current version: `1.1.0-SNAPSHOT`.
