@@ -1,15 +1,15 @@
 package com.jecklgamis.util;
 
-import junit.framework.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.lang.Integer.toBinaryString;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TryUnitTest {
 
@@ -31,19 +31,19 @@ public class TryUnitTest {
 
     @Test
     public void getOnSuccessShouldReturnTheExpressionResult() {
-        assertEquals(2, TryFactory.attempt(() -> 2).get(), 0);
+        assertEquals(2, TryFactory.attempt(() -> 2).get().intValue());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void getOnFailureShouldThrowException() {
-        TryFactory.attempt(() -> {
+        assertThrows(RuntimeException.class, () -> TryFactory.attempt(() -> {
             throw new Exception();
-        }).get();
+        }).get());
     }
 
     @Test
     public void getOrElseOnFailureShouldReturnGivenValue() {
-        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
+        assertEquals(Integer.valueOf(3), TryFactory.attempt(() -> {
             throw new Exception();
         }).getOrElse(3));
     }
@@ -62,11 +62,11 @@ public class TryUnitTest {
         assertTrue(sideEffect[0] == 1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void forEachOnSuccessWithFailingSideEffect() {
-        TryFactory.attempt(() -> 1).forEach(((v) -> {
+        assertThrows(RuntimeException.class, () -> TryFactory.attempt(() -> 1).forEach(((v) -> {
             throw new IOException();
-        }));
+        })));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class TryUnitTest {
 
     @Test
     public void getOrElseOnFailureShouldReturnExpressionResult() {
-        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
+        assertEquals(Integer.valueOf(3), TryFactory.attempt(() -> {
             throw new Exception();
         }).getOrElse(() -> 3));
     }
@@ -99,7 +99,7 @@ public class TryUnitTest {
 
     @Test
     public void OrElseOnOnFailureShouldReturnExpressionResultOfTheGivenTry() {
-        Assert.assertEquals(new Integer(3), TryFactory.attempt(() -> {
+        assertEquals(Integer.valueOf(3), TryFactory.attempt(() -> {
             throw new Exception();
         }).orElse(() -> TryFactory.attempt(() -> 3)).get());
     }
@@ -123,8 +123,8 @@ public class TryUnitTest {
 
     @Test
     public void mapOnSuccessShouldReturnSuccessForSubTypes() {
-        Assert.assertEquals("10", TryFactory.attempt(() -> 2).map((r) -> toBinaryString(r)).get());
-        Assert.assertEquals(true, TryFactory.attempt(() -> 2).map((r) -> r % 2 == 0).get().booleanValue());
+        assertEquals("10", TryFactory.attempt(() -> 2).map((r) -> toBinaryString(r)).get());
+        assertEquals(true, TryFactory.attempt(() -> 2).map((r) -> r % 2 == 0).get().booleanValue());
     }
 
     @Test
@@ -219,7 +219,7 @@ public class TryUnitTest {
             throw new Exception();
         }).recover((t) -> 0);
         assertTrue(result.isSuccess());
-        assertEquals(new Integer(0), result.get());
+        assertEquals(Integer.valueOf(0), result.get());
     }
 
     @Test
@@ -245,10 +245,10 @@ public class TryUnitTest {
             throw new Exception();
         }).recoverWith((t) -> TryFactory.attempt(() -> 0));
         assertTrue(result.isSuccess());
-        assertEquals(new Integer(0), result.get());
+        assertEquals(Integer.valueOf(0), result.get());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void recoverWithOnFailureShouldReturnFailureIfRecoveryFails() {
         Try result = TryFactory.attempt(() -> {
             throw new IOException();
@@ -261,18 +261,16 @@ public class TryUnitTest {
             throw new ArrayIndexOutOfBoundsException();
         });
         assertTrue(result.isFailure());
-        result.get();
+        assertThrows(RuntimeException.class, () -> result.get());
     }
 
-    class SomeException extends Exception {
+    static class SomeException extends Exception {
     }
 
-    @Test(expected = SomeException.class)
-    public void OrElseOnOnFailureShouldThrowException() throws Throwable {
-        TryFactory.attempt(() -> {
+    @Test
+    public void OrElseOnOnFailureShouldThrowException() {
+        assertThrows(SomeException.class, () -> TryFactory.attempt(() -> {
             throw new RuntimeException();
-        }).orElseThrow(new SomeException());
+        }).orElseThrow(new SomeException()));
     }
 }
-
-
