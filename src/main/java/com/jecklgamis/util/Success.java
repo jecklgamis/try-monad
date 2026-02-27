@@ -50,7 +50,7 @@ class Success<T> implements Try<T> {
 
     @Override
     public Optional<T> toOptional() {
-        return Optional.of(get());
+        return Optional.ofNullable(get());
     }
 
     @Override
