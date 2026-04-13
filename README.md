@@ -1,6 +1,6 @@
 # try-monad
 
-[![Build](https://github.com/jecklgamis/try-monad/actions/workflows/build.yml/badge.svg)](https://github.com/jecklgamis/try-monad/actions/workflows/build.yml)
+[![Build](https://github.com/jecklgamis/try-monad/actions/workflows/build.yaml/badge.svg)](https://github.com/jecklgamis/try-monad/actions/workflows/build.yaml)
 
 Inspired by `scala.util.Try`, this is a small library that provides an abstraction of a result of a function application.
 
